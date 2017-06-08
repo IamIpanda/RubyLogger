@@ -5,7 +5,7 @@ Gem::Specification.new do |gem|
   gem.summary = 'logger for self use.'
   gem.description = 'a gem packed a logger for iami\'s self use.'
   gem.authors = ['iami-panda']
-  gem.files = ['lib/Logger.rb']
+  gem.files = ['lib/iami-logger.rb']
   gem.license = 'MIT'
   gem.email = 'xinguangyao@gmail.com'
   gem.homepage = 'http://ii.mist.so'
