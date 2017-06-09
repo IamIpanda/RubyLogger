@@ -46,7 +46,7 @@ module IamI
     end
 
     def log(level, msg, *tag)
-      if should_log? @level
+      if should_log? level
         colored_message = format level, msg
         uncolored_message = format level, msg, false
         destinations = get_destination level
