@@ -35,14 +35,17 @@ module IamI
           time: :blue,
           stack: :green
       }
-      @triggers = []
+      @triggers = {}
       @stack_count = 3
       @time_format = '%Y-%m-%d %H:%M:%S.%L'
       @colored_message_model = '[%s][%14s][%s] %s'
       @uncolored_message_model = '[%s][%5s][%s] %s'
       @file_streams = {}
       this = self
-      $__register_logger_reference_main__.define_singleton_method @name.to_sym, Proc.new { this } if name != nil
+      name_symbol = @name.to_sym
+      $__register_logger_reference_main__.instance_eval do
+        define_method name_symbol, proc { this }
+      end
     end
 
     def log(level, msg, *tag)
@@ -56,7 +59,7 @@ module IamI
           io.puts is_destination_file?(destination) ? uncolored_message : colored_message
         end
       end
-      trigger uncolored_message, *tag
+      trigger msg, uncolored_message, *tag
     end
 
     def format(level, msg, color = true)
@@ -73,10 +76,10 @@ module IamI
       end
     end
 
-    def trigger(line, *tag)
-      return if @triggers == nil
-      @triggers.each do |trigger|
-        trigger.call line, *tag if @triggers.is_a? Proc
+    def trigger(msg, line, *tag)
+      return if @triggers.nil?
+      @triggers.values.each do |trigger|
+        trigger.call msg, line, *tag if trigger.is_a? Proc
       end
     end
 
@@ -127,6 +130,16 @@ module IamI
       else
         classic_method_missing name, *args, &block
       end
+    end
+
+    def register_trigger(name = nil, &block)
+      name = block.__id__.to_s if name.nil?
+      @triggers[name] = block
+      name
+    end
+
+    def unregister_trigger(key)
+      @triggers.delete key
     end
   end
 end
