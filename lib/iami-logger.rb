@@ -19,6 +19,7 @@ module IamI
     attr_accessor :triggers
     attr_accessor :stack_count
     attr_accessor :time_format
+    attr_accessor :trigger_any_message
     attr_accessor :colored_message_model
     attr_accessor :uncolored_message_model
 
@@ -40,6 +41,7 @@ module IamI
       @time_format = '%Y-%m-%d %H:%M:%S.%L'
       @colored_message_model = '[%s][%14s][%s] %s'
       @uncolored_message_model = '[%s][%5s][%s] %s'
+      @trigger_any_message = false
       @file_streams = {}
       this = self
       name_symbol = @name.to_sym
@@ -59,7 +61,7 @@ module IamI
           io.puts is_destination_file?(destination) ? uncolored_message : colored_message
         end
       end
-      trigger msg, uncolored_message, *tag
+      trigger(msg, uncolored_message, *tag) if @trigger_any_message or should_log? level
     end
 
     def format(level, msg, color = true)
