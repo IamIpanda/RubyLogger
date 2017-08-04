@@ -16,9 +16,11 @@ module IamI
     attr_accessor :level
     attr_accessor :destination
     attr_accessor :colors
-    attr_accessor :triggers
+    attr_reader :triggers
     attr_accessor :stack_count
     attr_accessor :time_format
+    attr_reader :recent_message_queue
+    attr_accessor :recent_message_count
     attr_accessor :trigger_any_message
     attr_accessor :colored_message_model
     attr_accessor :uncolored_message_model
@@ -43,6 +45,8 @@ module IamI
       @uncolored_message_model = '[%s][%5s][%s] %s'
       @trigger_any_message = false
       @file_streams = {}
+      @recent_message_queue = []
+      @recent_message_count = 50
       this = self
       name_symbol = @name.to_sym
       $__register_logger_reference_main__.instance_eval do
@@ -60,6 +64,8 @@ module IamI
           io = get_io destination
           io.puts is_destination_file?(destination) ? uncolored_message : colored_message
         end
+        @recent_message_queue.push uncolored_message
+        @recent_message_queue.shift if @recent_message_queue.length > @recent_message_count
       end
       trigger(msg, uncolored_message, *tag) if @trigger_any_message or should_log? level
     end
