@@ -8,12 +8,15 @@ module IamI
         content_type 'text/event-stream'
         stream :keep_open do |output_stream|
           this.connections << output_stream
+          for line in this.recent_message_queue
+            output_stream << "data: #{line}\r\nid: #{this.name}"
+          end
           log_hook = this.register_trigger do |message, line|
             output_stream << "data: #{line}\r\nid: #{this.name}"
           end
           output_stream.callback do
             this.connections.delete output_stream
-            ygopro_images_manager_logger.unregister_trigger log_hook
+            this.unregister_trigger log_hook
           end
         end
       end

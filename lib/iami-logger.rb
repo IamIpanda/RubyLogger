@@ -153,3 +153,4 @@ module IamI
 end
 
 $__register_logger_reference_main__ = self
+require File.dirname(__FILE__) + '/sinatra-middleware.rb'
