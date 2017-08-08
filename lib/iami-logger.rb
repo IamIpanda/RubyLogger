@@ -67,7 +67,7 @@ module IamI
         @recent_message_queue.push uncolored_message
         @recent_message_queue.shift if @recent_message_queue.length > @recent_message_count
       end
-      trigger(msg, uncolored_message, *tag) if @trigger_any_message or should_log? level
+      trigger(msg, uncolored_message, level, *tag) if @trigger_any_message or should_log? level
     end
 
     def format(level, msg, color = true)
@@ -84,10 +84,10 @@ module IamI
       end
     end
 
-    def trigger(msg, line, *tag)
+    def trigger(msg, line, level, *tag)
       return if @triggers.nil?
       @triggers.values.each do |trigger|
-        trigger.call msg, line, *tag if trigger.is_a? Proc
+        trigger.call msg, line, level, *tag if trigger.is_a? Proc
       end
     end
 
