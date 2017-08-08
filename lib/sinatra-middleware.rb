@@ -9,10 +9,10 @@ module IamI
         stream :keep_open do |output_stream|
           this.connections << output_stream
           for line in this.recent_message_queue
-            output_stream << "data: #{line}\r\nid: #{this.name}"
+            output_stream << "data: #{line}\r\nid: #{this.name}\r\n"
           end
           log_hook = this.register_trigger do |message, line|
-            output_stream << "data: #{line}\r\nid: #{this.name}"
+            output_stream << "data: #{line}\r\nid: #{this.name}\r\n"
           end
           output_stream.callback do
             this.connections.delete output_stream
