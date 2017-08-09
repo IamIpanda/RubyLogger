@@ -38,7 +38,7 @@ uncolored_message_model|String|指定输出消息的形式。
 ### unregister_trigger(name)
 注销触发器。
 
-### before_function
+### sinatra_proc
 需要 `Sinatra`。
 返回一个能够用于 SSE 的 `Proc`。
 

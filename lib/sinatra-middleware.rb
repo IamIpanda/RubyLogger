@@ -1,22 +1,27 @@
 module IamI
   class Logger
     attr_accessor :connections
-    def before_function
+
+    alias connection_register_connections_initialize initialize
+    def initialize(*args)
+      connection_register_connections_initialize(*args)
+      @connections = []
+      register_trigger 'connection_trigger' do |message, line, level|
+        @connections.each {|connection| connection << "data: #{line}\n\n"}
+      end
+    end
+
+    def sinatra_proc
       this = self
-      Proc.new do
-        this.connections = [] if this.connections == nil
+      return Proc.new do
         content_type 'text/event-stream'
-        stream :keep_open do |output_stream|
+        return stream :keep_open do |output_stream|
           this.connections << output_stream
           for line in this.recent_message_queue
-            output_stream << "data: #{line}\r\nid: #{this.name}\r\n"
-          end
-          log_hook = this.register_trigger do |message, line|
-            output_stream << "data: #{line}\r\nid: #{this.name}\r\n"
+            output_stream << "data: #{line}\n\n"
           end
           output_stream.callback do
             this.connections.delete output_stream
-            this.unregister_trigger log_hook
           end
         end
       end

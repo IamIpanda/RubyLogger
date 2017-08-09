@@ -140,10 +140,10 @@ module IamI
       end
     end
 
-    def register_trigger(name = nil, &block)
-      name = block.__id__.to_s if name.nil?
-      @triggers[name] = block
-      name
+    def register_trigger(key = nil, &block)
+      key = rand.to_s + block.__id__.to_s if key.nil?
+      @triggers[key] = block
+      key
     end
 
     def unregister_trigger(key)
